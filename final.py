@@ -1653,7 +1653,7 @@ def Part4(x, y, iteration_number):
         num_epochs = 300 # Only need to finetune later
         lr = 0.0005
     else:
-        num_epochs = 500
+        num_epochs = 600
         lr = 0.001
 
     # optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-3)
