@@ -1650,7 +1650,7 @@ def Part4(x, y, iteration_number):
     os.makedirs(f'./drive/MyDrive/ISRO_SuperResolution/models', exist_ok=True)
     if os.path.isfile(f'./drive/MyDrive/ISRO_SuperResolution/models/{x}_{y}.pth'):
         model.load_state_dict(torch.load(f"./drive/MyDrive/ISRO_SuperResolution/models/{x}_{y}.pth"))
-        num_epochs = 200 # Only need to finetune later
+        num_epochs = 300 # Only need to finetune later
         lr = 0.0005
     else:
         num_epochs = 500
