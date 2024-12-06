@@ -1,0 +1,4 @@
+regions/ filter=lfs diff=lfs merge=lfs -text
+regions/* filter=lfs diff=lfs merge=lfs -text
+regions/ISRO_RegionData01/* filter=lfs diff=lfs merge=lfs -text
+regions/ISRO_RegionData01/ filter=lfs diff=lfs merge=lfs -text
