@@ -1127,10 +1127,10 @@ def Part3(subregion_row, subregion_col, iteration_number, updatedIndices, update
         for j_index, lon_start in enumerate(lon_positions):
             futures = []
             for i_index, lat_start in enumerate(lat_positions):
-                if iteration_number == 1:
-                    if updatedSubregions[i_index][j_index] == 0:
-                        print(f"Skipping subgraph {i_index} {j_index} for Region {subregion_row}{subregion_col}: No updated entries")
-                        continue
+                # if iteration_number == 1:
+                if updatedSubregions[i_index][j_index] == 0:
+                    print(f"Skipping subgraph {i_index} {j_index} for Region {subregion_row}{subregion_col}: No updated entries")
+                    continue
                 # Submit each task to the thread pool
                 print(f"[INFO] {current_time()} Generating subgraph {i_index} {j_index} for Region {subregion_row} {subregion_col}")
                 futures.append(executor.submit(process_subgraph, df, subregion_row, subregion_col, lat_start, lon_start, lat_sizes[i_index], lon_sizes[j_index], iteration_number))
@@ -1346,7 +1346,7 @@ def combined_loss(mode, predictions, targets, mask, w_features, edge_index, elem
         mse_loss = masked_mse_loss(predictions, targets, mask, element_weights)
         # log_loss = logarithmic_loss(predictions, targets, mask, element_weights)
 
-        return mse_loss + 2*lambda_reg*deviation_loss
+        return mse_loss + deviation_loss
     elif mode == 2:
         feature_sim_loss = feature_similarity_loss(predictions, w_features, edge_index)
         spatial_loss = spatial_similarity_loss(predictions, edge_index, lat_lon)
