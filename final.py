@@ -1315,6 +1315,24 @@ def spatial_similarity_loss(predictions, edge_index, lat_lon):
     return spatial_loss
 
 
+def deviation_loss_total(predictions):
+    """
+    Calculate deviation loss as the deviation of the sum of predictions per sample from 100.
+    
+    Args:
+        predictions (torch.Tensor): Tensor of predictions with shape (batch_size, num_outputs).
+
+    Returns:
+        torch.Tensor: Deviation loss.
+    """
+    # Sum predictions along the output dimension (dim=1) for each sample
+    per_sample_sum = torch.sum(predictions, dim=1)  # Shape: (batch_size,)
+    # Calculate the deviation of each sample's sum from 100
+    deviation = torch.abs(per_sample_sum - 100)  # Shape: (batch_size,)
+    # Return the mean deviation across the batch
+    return torch.mean(deviation)  # Scalar loss
+    
+
 def combined_loss(mode, predictions, targets, mask, w_features, edge_index, element_weights, lat_lon, metadata, lambda_reg=0.1):
     # Calculated only for known points for subgraphs where mask is present
     # subregion_row_loss = metadata['subregion_indices']['row']
@@ -1322,23 +1340,25 @@ def combined_loss(mode, predictions, targets, mask, w_features, edge_index, elem
     # subregion_srow = metadata['subregion_indices']['subgraph_row']
     # subregion_scol = metadata['subregion_indices']['subgraph_col']
 
+    deviation_loss = deviation_loss_total(predictions)
+
     if mode == 1:
         mse_loss = masked_mse_loss(predictions, targets, mask, element_weights)
         # log_loss = logarithmic_loss(predictions, targets, mask, element_weights)
 
-        return mse_loss
+        return mse_loss + 2*lambda_reg*deviation_loss
     elif mode == 2:
         feature_sim_loss = feature_similarity_loss(predictions, w_features, edge_index)
         spatial_loss = spatial_similarity_loss(predictions, edge_index, lat_lon)
         mse_loss = masked_mse_loss(predictions, targets, mask, element_weights)
         log_loss = logarithmic_loss(predictions, targets, mask, element_weights)
 
-        return mse_loss + lambda_reg*log_loss + feature_sim_loss + spatial_loss
+        return mse_loss + lambda_reg*log_loss + feature_sim_loss + spatial_loss + lambda_reg*deviation_loss
     elif mode == 3:
         feature_sim_loss = feature_similarity_loss(predictions, w_features, edge_index)
         spatial_loss = spatial_similarity_loss(predictions, edge_index, lat_lon)
     
-        return feature_sim_loss + spatial_loss
+        return feature_sim_loss + spatial_loss + deviation_loss
     else:
         return None
 
