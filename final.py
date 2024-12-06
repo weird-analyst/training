@@ -213,7 +213,7 @@ def isMareOrHighland(lat, lon):
 # It returns region wise number of updated points, number of updated points in each subregion of the region and the indices where each csv file is updated
 
 
-from shapely import Point
+# from shapely import Point
 import torch
 from collections import defaultdict
 import geopandas as gpd
