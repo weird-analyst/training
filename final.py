@@ -1650,10 +1650,10 @@ def Part4(x, y, iteration_number):
     os.makedirs(f'./drive/MyDrive/ISRO_SuperResolution/models', exist_ok=True)
     if os.path.isfile(f'./drive/MyDrive/ISRO_SuperResolution/models/{x}_{y}.pth'):
         model.load_state_dict(torch.load(f"./drive/MyDrive/ISRO_SuperResolution/models/{x}_{y}.pth"))
-        num_epochs = 300 # Only need to finetune later
+        num_epochs = 250 # Only need to finetune later
         lr = 0.0005
     else:
-        num_epochs = 700
+        num_epochs = 600
         lr = 0.001
 
     # optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-3)
@@ -1664,11 +1664,15 @@ def Part4(x, y, iteration_number):
     # with open(pickle_file_path, 'rb') as f:
     #     Occupancy = pickle.load(f)
 
-    for filename in os.listdir(directory):
-        if filename.endswith(".pt"):
-            torch.cuda.empty_cache()
-            file_path = os.path.join(directory, filename)
+    for x_index in range(6):  # 0 to 5
+        for y_index in range(13):  # 0 to 12
+            filename = f"subgraph_{x}_{y}_{x_index}_{y_index}.pt"
+            full_path = os.path.join(directory, filename)
+            
+            if not os.path.exists(full_path):
+                continue
 
+            torch.cuda.empty_cache()
             # Extract i, j, x, and y using the regular expression
             match = re.match(pattern, filename)
             if not match:
@@ -1699,7 +1703,7 @@ def Part4(x, y, iteration_number):
             # save_directory = f'{checkpoint_dir}/subregion_{x}_{y}/{iteration_number}/{x1}_{y1}/'
             # os.makedirs(save_directory, exist_ok=True)
 
-            graph_data = torch.load(file_path)
+            graph_data = torch.load(full_path)
 
             # For each data object file I need to train the Graph using that data
             train_graph(graph_data, model, optimizer, num_epochs, lr)
@@ -1713,7 +1717,7 @@ def Part4(x, y, iteration_number):
             graph_output = model(graph_data).cpu().detach()
             _ = Part4executor.submit(save_predictions, x, y, graph_data, graph_output)
 
-            os.remove(file_path)
+            os.remove(full_path)
 
             print(f"[INFO] {current_time()} Processed and deleted {filename}")
 
