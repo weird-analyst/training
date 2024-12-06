@@ -1394,7 +1394,7 @@ def train_combined(data, model, optimizer, epochs, element_weights, lr):
     subregion_col_loss = data.metadata['subregion_indices']['col']
     subregion_srow = data.metadata['subregion_indices']['subgraph_row']
     subregion_scol = data.metadata['subregion_indices']['subgraph_col']
-    totalEpochs = int(epochs*(2))
+    totalEpochs = int(epochs*(3/2))
 
     if os.path.isfile(f"./drive/MyDrive/ISRO_SuperResolution/masks/masks_subregion_{subregion_row_loss}_{subregion_col_loss}/mask_tensor_{subregion_row_loss}_{subregion_col_loss}_{subregion_srow}_{subregion_scol}.pt"):
         # Mask is present, train for epochs using mse loss
