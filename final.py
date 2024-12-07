@@ -588,8 +588,6 @@ def process_data_regions(data_regions, batch_size, updatedRegions, updatedSubreg
     This function collects data for subregions and updates CSVs after batch processing.
     """
 
-    bools = input('Is it old data?')
-
     for batch_start in range(0, len(data_regions), batch_size):
         batch_regions = data_regions[batch_start:batch_start + batch_size]
 
@@ -623,14 +621,6 @@ def process_data_regions(data_regions, batch_size, updatedRegions, updatedSubreg
                 isMareOrHighland(subregion_center_lat, subregion_center_lon)
                 for subregion_center_lat, subregion_center_lon in subregion_centers.values()
             ]
-
-            if bools == 'yes':
-                TI = np.random.normal(np.mean([4.37 if label == 1 else 0.66 for label in labels]), 1)
-                region['Ti'] = TI
-                initial_abundances[1] = TI
-                CA = 100 - initial_abundances.sum().item()
-                region['Ca'] = CA
-                initial_abundances[2] = CA
 
             # Calculate optimized abundances for all 8 subregions (8x8 matrix)
             optimized_abundances = calculate_abundances(initial_abundances, labels, counter)
@@ -723,7 +713,7 @@ def RegionProcessor2(file_path, batch_size, updatedRegions, updatedSubregions, i
 
 # List of data region files
 def Part2(file_name):
-    batch_size = 3000
+    batch_size = 4000
 
     updatedRegions = np.zeros((8, 8))
     updatedSubregions = np.zeros((8, 8, 6, 13))
